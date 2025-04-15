@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CreateProduct(BaseModel):
@@ -24,5 +24,14 @@ class CreateUser(BaseModel):
     username: str
     email: str
     password: str
+
+
+class CreateReview(BaseModel):
+    """Схема для создания отзыва."""
+    user_id: int = Field(..., description="ID пользователя")
+    product_id: int = Field(..., description="ID продукта")
+    comment: str | None = Field(description="Комментарий отзыва")
+    grade: int = Field(..., description="Оценка отзыва", ge=1, le=10)
+
 
 

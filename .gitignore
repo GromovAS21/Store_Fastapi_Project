@@ -160,8 +160,8 @@ cython_debug/
 .idea/
 
 # Игнорировать все файлы миграций, кроме __init__.py
-*/migrations/*
-!*/migrations/__init__.py
+migrations/*
+!migrations/__init__.py
 
 # Игнорировать dump.rdb в папке redis/
 dump.rdb
