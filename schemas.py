@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 
 class CreateProduct(BaseModel):
     """Схема для создания продукта."""
+
     name: str
     description: str
     price: int
@@ -13,12 +14,14 @@ class CreateProduct(BaseModel):
 
 class CreateCategory(BaseModel):
     """Схема для создания категории."""
+
     name: str
     parent_id: int | None = None
 
 
 class CreateUser(BaseModel):
     """Схема для создания пользователя."""
+
     first_name: str
     last_name: str
     username: str
@@ -28,10 +31,6 @@ class CreateUser(BaseModel):
 
 class CreateReview(BaseModel):
     """Схема для создания отзыва."""
-    user_id: int = Field(..., description="ID пользователя")
-    product_id: int = Field(..., description="ID продукта")
-    comment: str | None = Field(description="Комментарий отзыва")
+
+    comment: str | None = Field(None, description="Комментарий отзыва")
     grade: int = Field(..., description="Оценка отзыва", ge=1, le=10)
-
-
-

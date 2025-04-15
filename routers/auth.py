@@ -4,8 +4,7 @@ from typing import Annotated
 import jwt
 from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
-from fastapi.security import (HTTPBasic, OAuth2PasswordBearer,
-                              OAuth2PasswordRequestForm)
+from fastapi.security import HTTPBasic, OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -16,7 +16,13 @@ router = APIRouter(prefix="/products", tags=["products"])
 
 @router.get("/")
 async def all_products(db: Annotated[AsyncSession, Depends(get_db)]):
-    products = await db.scalars(select(Product).join(Category).where(Product.is_activate == True, Category.is_active == True, Product.stock > 0))
+    products = await db.scalars(
+        select(Product)
+        .join(Category)
+        .where(
+            Product.is_activate == True, Category.is_active == True, Product.stock > 0
+        )
+    )
     list_products = products.all()
     if not list_products:
         raise HTTPException(
@@ -27,9 +33,9 @@ async def all_products(db: Annotated[AsyncSession, Depends(get_db)]):
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_product(
-        db: Annotated[AsyncSession, Depends(get_db)],
-        product: CreateProduct,
-        get_user: Annotated[dict, Depends(get_current_user)]
+    db: Annotated[AsyncSession, Depends(get_db)],
+    product: CreateProduct,
+    get_user: Annotated[dict, Depends(get_current_user)],
 ):
     if get_user.get("is_admin") or get_user.get("is_supplier"):
         category = await db.scalar(
@@ -37,7 +43,8 @@ async def create_product(
         )
         if not category:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="There is no category found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="There is no category found",
             )
 
         await db.execute(
@@ -58,13 +65,13 @@ async def create_product(
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not authorized to use this method"
+            detail="You are not authorized to use this method",
         )
 
 
 @router.get("/{category_slug}")
 async def product_by_category(
-        db: Annotated[AsyncSession, Depends(get_db)], category_slug: str
+    db: Annotated[AsyncSession, Depends(get_db)], category_slug: str
 ):
     category = await db.scalar(select(Category).where(Category.slug == category_slug))
 
@@ -91,12 +98,13 @@ async def product_by_category(
 
 @router.get("/detail/{product_slug}")
 async def detail_product(
-        db: Annotated[AsyncSession, Depends(get_db)], product_slug: str):
-    product = await db.scalar(select(Product).where(
-        Product.slug == product_slug,
-        Product.is_activate == True,
-        Product.stock > 0
-    ))
+    db: Annotated[AsyncSession, Depends(get_db)], product_slug: str
+):
+    product = await db.scalar(
+        select(Product).where(
+            Product.slug == product_slug, Product.is_activate == True, Product.stock > 0
+        )
+    )
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="There is no product found"
@@ -106,24 +114,29 @@ async def detail_product(
 
 @router.put("/{product_slug}")
 async def update_product(
-        db: Annotated[AsyncSession, Depends(get_db)],
-        product_slug: str,
-        update_product: CreateProduct,
-        get_user: Annotated[dict, Depends(get_current_user)]
+    db: Annotated[AsyncSession, Depends(get_db)],
+    product_slug: str,
+    update_product: CreateProduct,
+    get_user: Annotated[dict, Depends(get_current_user)],
 ):
-    if get_user.get('is_supplier') or get_user.get('is_admin'):
+    if get_user.get("is_supplier") or get_user.get("is_admin"):
         product = await db.scalar(select(Product).where(Product.slug == product_slug))
 
         if not product:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is no product found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="There is no product found",
+            )
 
         if get_user.get("is_admin") or get_user.get("id") == product.supplier_id:
             category = await db.scalar(
-                select(Category).where(Category.id == update_product.category))
+                select(Category).where(Category.id == update_product.category)
+            )
 
             if not category:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="There is no category found"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="There is no category found",
                 )
             product.name = update_product.name
             product.slug = slugify(update_product.name)
@@ -141,27 +154,31 @@ async def update_product(
         else:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail='You have not enough permission for this action'
+                detail="You have not enough permission for this action",
             )
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not authorized to use this method"
+            detail="You are not authorized to use this method",
         )
 
 
 @router.delete("/{product_slug}")
 async def delete_product(
-        db: Annotated[AsyncSession, Depends(get_db)],
-        product_slug: str,
-        get_user: Annotated[dict, Depends(get_current_user)]
+    db: Annotated[AsyncSession, Depends(get_db)],
+    product_slug: str,
+    get_user: Annotated[dict, Depends(get_current_user)],
 ):
-    if get_user.get('is_supplier') or get_user.get('is_admin'):
+    if get_user.get("is_supplier") or get_user.get("is_admin"):
         product = await db.scalar(
-            select(Product).where(Product.slug == product_slug, Product.is_activate == True))
+            select(Product).where(
+                Product.slug == product_slug, Product.is_activate == True
+            )
+        )
         if not product:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="There is no product found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="There is no product found",
             )
 
         if get_user.get("is_admin") or get_user.get("id") == product.supplier_id:
@@ -174,10 +191,10 @@ async def delete_product(
         else:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not authorized to use this method"
+                detail="You are not authorized to use this method",
             )
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not authorized to use this method"
+            detail="You are not authorized to use this method",
         )
