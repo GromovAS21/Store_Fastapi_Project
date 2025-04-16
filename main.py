@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from routers import auth, permissions, reviews
 from routers import products, categories
@@ -9,11 +10,28 @@ app_v1 = FastAPI(
     description="The first version of my API",
 )
 
+origins = [
+    "http://127.0.0.1:8000/",
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app_v1.include_router(categories.router)
 app_v1.include_router(products.router)
 app_v1.include_router(auth.router)
 app_v1.include_router(permissions.router)
 app_v1.include_router(reviews.router)
 
+app.mount("/v1", app_v1)  # Версионирование
 
-app.mount("/v1", app_v1) # Версионирование
+
+@app.get("/")
+async def main():
+    return {"message": "Hello World"}
