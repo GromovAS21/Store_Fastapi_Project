@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from middleware import TimingMiddleware
 from routers import auth, permissions, reviews
 from routers import products, categories
 
@@ -22,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(TimingMiddleware)
 
 app_v1.include_router(categories.router)
 app_v1.include_router(products.router)
