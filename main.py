@@ -1,10 +1,10 @@
 import time
 
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.requests import Request
+from loguru import logger
 
-from middleware import TimingMiddleware
+from middleware import TimingMiddleware, log_middleware
 from routers import auth, permissions, reviews
 from routers import products, categories
 
@@ -18,6 +18,7 @@ origins = [
     "http://127.0.0.1:8000/",
 ]
 
+logger.add("info.log", format="Log: [{extra[log_id]}:{time} - {level} - {message}]", level="INFO", enqueue = True)
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(TimingMiddleware)
+app.middleware("http")(log_middleware)
 
 app_v1.include_router(categories.router)
 app_v1.include_router(products.router)
@@ -36,13 +38,17 @@ app_v1.include_router(reviews.router)
 
 app.mount("/v1", app_v1)  # Версионирование
 
+def call_background_task(message):
+    time.sleep(10)
+    print(message)
 
-@app.middleware("http")
-async def modify_request_response_middleware(request: Request, call_next):
-    response = await call_next(request)
-    print("Начало выполнения запроса")
-    return response
 
-@app.get("/")
-async def main():
-    return {"message": "Hello World"}
+@app_v1.get("/")
+async def hello_world(message: str, background_task: BackgroundTasks):
+    background_task.add_task(call_background_task, message)
+    return {'message': 'Hello World!'}
+
+
+
+
+
