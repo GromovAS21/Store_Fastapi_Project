@@ -1,5 +1,8 @@
+import time
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
 
 from middleware import TimingMiddleware
 from routers import auth, permissions, reviews
@@ -33,6 +36,12 @@ app_v1.include_router(reviews.router)
 
 app.mount("/v1", app_v1)  # Версионирование
 
+
+@app.middleware("http")
+async def modify_request_response_middleware(request: Request, call_next):
+    response = await call_next(request)
+    print("Начало выполнения запроса")
+    return response
 
 @app.get("/")
 async def main():
