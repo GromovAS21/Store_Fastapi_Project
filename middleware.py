@@ -14,10 +14,13 @@ class TimingMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        start_time = time.time()
-        await self.app(scope, receive, send)
-        duration = time.time() - start_time
-        logger.info(f"Время выполнения запроса: {duration:.4f} секунд")
+        try:
+            start_time = time.time()
+            await self.app(scope, receive, send)
+            duration = time.time() - start_time
+            logger.info(f"Время выполнения запроса: {duration:.4f} секунд")
+        except KeyError:
+            pass
 
 async def log_middleware(request: Request, call_next):
     log_id = str(uuid4())
