@@ -5,12 +5,10 @@ from loguru import logger
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
-from starlette.websockets import WebSocket, WebSocketDisconnect
 
-from middleware import TimingMiddleware, log_middleware
-from routers import auth, permissions, reviews, tests, websockets
-from routers import products, categories
-from websocket import ConnectionManager
+from middleware import log_middleware, TimingMiddleware
+from routers import tests
+from routers import reviews, websockets, categories, auth, products, permissions
 
 app = FastAPI()
 app_v1 = FastAPI(
