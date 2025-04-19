@@ -1,5 +1,4 @@
 import asyncio
-import os
 from logging.config import fileConfig
 
 from sqlalchemy import pool
@@ -10,16 +9,16 @@ from alembic import context
 
 from backend.db import Base
 from config import DATABASE_URL
-from models.reviews import Review
-from models.users import User
-from models.products import Product
 from models.categories import Category
+from models.users import User
+from models.reviews import Review
+from models.products import Product
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-section = config.config_ini_section
+section =  config.config_ini_section
 config.set_section_option(section, "DATABASE_URL", DATABASE_URL)
 
 # Interpret the config file for Python logging.
