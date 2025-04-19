@@ -159,9 +159,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# Игнорировать все файлы миграций, кроме __init__.py
-*/migrations/*
-!*/migrations/__init__.py
-
 # Игнорировать dump.rdb в папке redis/
 dump.rdb
