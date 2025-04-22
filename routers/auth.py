@@ -9,13 +9,13 @@ from passlib.context import CryptContext
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import config
 from backend.db_depends import get_db
 from models.users import User
 from schemas import CreateUser
 
-SECRET_KEY = "a21679097c1ba42e9bd06eea239cdc5bf19b249e87698625cba5e3572f005544"
-ALGORITHM = "HS256"
-
+SECRET_KEY = config.SECRET_KEY
+ALGORITHM = config.ALGORITHM
 router = APIRouter(prefix="/auth", tags=["auth"])
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBasic()
